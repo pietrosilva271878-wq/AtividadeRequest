@@ -11,7 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "emprestimo")
+@Table(name = "emprestimos")
 public class Emprestimo {
 
     @Id
@@ -66,4 +66,5 @@ public class Emprestimo {
         this.dataDevolucao = dataDevolucao;
     
     }
+
 }

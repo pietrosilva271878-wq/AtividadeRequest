@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity 
-@Table(name = "livro")
+@Table(name = "livros")
 public class Livro {
     @Id 
     @GeneratedValue (strategy = GenerationType.IDENTITY) 
@@ -42,5 +42,9 @@ public class Livro {
     public void setAutor(String autor) {
         this.autor = autor;
     }
+    public void setId(int id) {
+        this.id = id;
+    }
+    
     
 }

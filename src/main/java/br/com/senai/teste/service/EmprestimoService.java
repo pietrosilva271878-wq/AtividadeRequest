@@ -1,45 +1,62 @@
 package br.com.senai.teste.service;
-import org.springframework.stereotype.Service;
-import br.com.senai.teste.model.Emprestimo;
-import br.com.senai.teste.repository.EmprestimoRepository;
-import java.util.Optional;
-import java.util.List;
 
+import java.time.LocalDate;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import br.com.senai.teste.model.Aluno;
+import br.com.senai.teste.model.Emprestimo;
+import br.com.senai.teste.model.Livro;
+import br.com.senai.teste.repository.AlunoRepository;
+import br.com.senai.teste.repository.EmprestimoRepository;
+import br.com.senai.teste.repository.LivroRepository;
 
 @Service
 public class EmprestimoService {
+
     private final EmprestimoRepository emprestimoRepository;
+    private final AlunoRepository alunoRepository;
+    private final LivroRepository livroRepository;
 
-    public EmprestimoService(EmprestimoRepository emprestimoRepository) {
+    public EmprestimoService(
+            EmprestimoRepository emprestimoRepository,
+            AlunoRepository alunoRepository,
+            LivroRepository livroRepository) {
+
         this.emprestimoRepository = emprestimoRepository;
+        this.alunoRepository = alunoRepository;
+        this.livroRepository = livroRepository;
     }
 
-    public Emprestimo cadastrar(Emprestimo emprestimo) {
-        return emprestimoRepository.save(emprestimo);
-    }
+    public Optional<Emprestimo> cadastrar(Integer alunoId, Integer livroId) {
+        Optional<Aluno> aluno = alunoRepository.findById(alunoId);
+        Optional<Livro> livro = livroRepository.findById(livroId);
 
-    public List<Emprestimo> listar() {
-        return emprestimoRepository.findAll();
-    }
-
-    public Optional<Emprestimo> buscarPorId(Integer id) {
-        return emprestimoRepository.findById(id);
-        
-    }
-    public Optional<Emprestimo> atualizar(Integer id, Emprestimo novosDados) {
-        Optional<Emprestimo> emprestimoEncontrado = emprestimoRepository.findById(id);
-
-        if (emprestimoEncontrado.isEmpty()) {
+        if (aluno.isEmpty() || livro.isEmpty()) {
             return Optional.empty();
         }
 
-        Emprestimo emprestimo = emprestimoEncontrado.get();
-
-        emprestimo.setDataEmprestimo(novosDados.getDataEmprestimo());
-        emprestimo.setAluno(novosDados.getAluno());
-        emprestimo.setLivro(novosDados.getLivro());
+        Emprestimo emprestimo = new Emprestimo();
+        emprestimo.setAluno(aluno.get());
+        emprestimo.setLivro(livro.get());
+        emprestimo.setDataDevolucao(LocalDate.now());
 
         return Optional.of(emprestimoRepository.save(emprestimo));
     }
 
-}
+    public Optional<Emprestimo> devolver(Integer id) {
+        Optional<Emprestimo> emprestimoOptional = emprestimoRepository.findById(id);
+
+        if (emprestimoOptional.isPresent()) {
+            Emprestimo emprestimo = emprestimoOptional.get();
+            emprestimo.setDataDevolucao(LocalDate.now());
+            return Optional.of(emprestimoRepository.save(emprestimo));
+        } else {
+            return Optional.empty();
+        }
+    }
+} 
+
+    
+
